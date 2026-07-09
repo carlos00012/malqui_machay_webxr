@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+    --verde-primario: #1F5F3F;
+    --verde-medio: #2E7D52;
+    --marron-tierra: #8C6A3F;
+    --piedra: #6E6259;
+    --piedra-clara: #A99C8C;
+    --crema: #F5F1E8;
+    --oscuro: #14201A;
+    --oro: #C9A227;
+    --fuente-titulo: 'Cormorant Garamond', serif;
+    --fuente-cuerpo: 'Jost', 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: var(--fuente-cuerpo);
+    background: var(--oscuro);
+    color: var(--crema);
+}
+
+a-scene { position: fixed; inset: 0; }
+
+/* ========================================================= */
+/* PANTALLA DE BIENVENIDA                                     */
+/* ========================================================= */
+#pantalla-bienvenida {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--crema);
+    padding: 24px;
+    background:
+        linear-gradient(180deg, rgba(10,16,12,0.55) 0%, rgba(10,16,12,0.80) 60%, rgba(10,16,12,0.95) 100%),
+        var(--bienvenida-bg, radial-gradient(circle at 50% 30%, #274a37, #10231a 75%)) center/cover no-repeat;
+    transition: opacity 1s ease, visibility 1s;
+}
+#pantalla-bienvenida.oculto { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.logos-bienvenida {
+    display: flex;
+    gap: 2.5rem;
+    align-items: center;
+    margin-bottom: 1.6rem;
+}
+.logos-bienvenida img {
+    height: 62px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+}
+
+#pantalla-bienvenida h1 {
+    font-family: var(--fuente-titulo);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0 0 0.4rem;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+#pantalla-bienvenida .subtitulo {
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--oro);
+    margin-bottom: 1.6rem;
+    opacity: 0.9;
+}
+#pantalla-bienvenida .introduccion {
+    max-width: 620px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    opacity: 0.9;
+    margin-bottom: 2.4rem;
+}
+.linea-decorativa {
+    width: 90px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--oro), transparent);
+    margin: 0 auto 1.6rem;
+}
+
+#btn-ingresar {
+    padding: 16px 46px;
+    background: linear-gradient(135deg, var(--marron-tierra), #6f5228);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    color: var(--crema);
+    font-family: var(--fuente-cuerpo);
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+#btn-ingresar:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.6); }
+#btn-ingresar:active { transform: translateY(0); }
+
+#pantalla-bienvenida .ayuda {
+    margin-top: 1.4rem;
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+/* Transición de entrada (fundido tras el clic) */
+#velo-transicion {
+    position: fixed; inset: 0; z-index: 999;
+    background: #000; opacity: 0; pointer-events: none;
+    transition: opacity 1.1s ease;
+}
+#velo-transicion.activo { opacity: 1; }
+
+/* ========================================================= */
+/* OVERLAY UI GENERAL                                         */
+/* ========================================================= */
+#overlay-ui { position: fixed; inset: 0; z-index: 500; pointer-events: none; font-family: var(--fuente-cuerpo); }
+
+#cabecera {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 22px;
+    background: linear-gradient(180deg, rgba(10,16,12,0.75), transparent);
+    pointer-events: none;
+}
+#cabecera h1 {
+    font-family: var(--fuente-titulo);
+    font-size: 1.3rem; font-weight: 600; margin: 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+}
+#cabecera h1 span { font-size: 0.85rem; opacity: 0.75; font-family: var(--fuente-cuerpo); display: block; font-weight: 300; }
+
+#panel-carga {
+    position: fixed; inset: 0; z-index: 800;
+    display: flex; flex-direction: column; gap: 14px;
+    align-items: center; justify-content: center;
+    background: var(--oscuro); color: var(--crema);
+    pointer-events: all;
+}
+#panel-carga.oculto { display: none; }
+.spinner {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 3px solid rgba(245,241,232,0.2); border-top-color: var(--oro);
+    animation: girar 1s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---- Panel de información flotante (clic sobre objetos) ---- */
+#panel-info {
+    position: fixed;
+    right: 22px; bottom: 22px;
+    width: min(380px, 90vw);
+    max-height: 62vh;
+    overflow-y: auto;
+    background: rgba(20, 32, 26, 0.94);
+    border: 1px solid rgba(201,162,39,0.35);
+    border-radius: 14px;
+    padding: 20px 22px;
+    pointer-events: all;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+    transform: translateY(12px);
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+#panel-info.visible { opacity: 1; transform: translateY(0); }
+#panel-info.oculto { display: none; }
+
+#cerrar-panel {
+    position: absolute; top: 10px; right: 12px;
+    background: none; border: none; color: var(--crema);
+    font-size: 1.4rem; cursor: pointer; opacity: 0.7; line-height: 1;
+}
+#cerrar-panel:hover { opacity: 1; }
+
+#info-imagen {
+    width: 100%; max-height: 160px; object-fit: cover;
+    border-radius: 8px; margin-bottom: 12px;
+    border: 1px solid rgba(201,162,39,0.3);
+}
+#info-imagen.oculto { display: none; }
+
+.etiqueta {
+    display: inline-block;
+    font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--oro); border: 1px solid var(--oro);
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+}
+#info-nombre { font-family: var(--fuente-titulo); font-size: 1.5rem; margin: 0 0 4px; }
+#info-subnombre { font-style: italic; opacity: 0.7; font-size: 0.9rem; margin: 0 0 10px; }
+#info-descripcion { font-size: 0.92rem; line-height: 1.55; margin: 0 0 10px; opacity: 0.95; }
+
+.info-extra { margin-bottom: 10px; }
+.info-extra strong { color: var(--oro); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+.info-extra p { margin: 0 0 8px; font-size: 0.88rem; line-height: 1.5; opacity: 0.9; }
+
+#pie-instrucciones {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    font-size: 0.8rem; opacity: 0.65; text-align: center;
+    background: rgba(0,0,0,0.35); padding: 6px 16px; border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* ---- Controles flotantes del video (auditorio) ---- */
+#controles-video {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    display: flex; gap: 14px; z-index: 500; pointer-events: all;
+}
+#controles-video.oculto { display: none; }
+#controles-video button {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(20,32,26,0.85); border: 1px solid rgba(201,162,39,0.4);
+    color: var(--crema); font-size: 1.2rem; cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+#controles-video button:hover { background: rgba(201,162,39,0.3); transform: scale(1.06); }
+
+/* ---- Indicador de zona (breadcrumb ambiental) ---- */
+#indicador-zona {
+    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--oro); background: rgba(0,0,0,0.35);
+    padding: 6px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.4s;
+    pointer-events: none;
+}
+#indicador-zona.visible { opacity: 1; }
+
+@media (max-width: 640px) {
+    .logos-bienvenida img { height: 44px; }
+    #panel-info { right: 10px; left: 10px; width: auto; bottom: 10px; }
+    #pie-instrucciones { font-size: 0.7rem; white-space: normal; max-width: 90vw; }
+}

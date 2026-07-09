@@ -1,0 +1,1 @@
+Coloca aquí el modelo 3D principal malqui.glb (formato glTF binario).

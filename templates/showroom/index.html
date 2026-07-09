@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>{% if lugar %}{{ lugar.nombre_proyecto }}{% else %}Museo Virtual Malqui Machay{% endif %}</title>
+
+    <!-- A-Frame (WebXR) -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'showroom/css/showroom.css' %}">
+</head>
+<body>
+
+    <!-- ========================================================= -->
+    <!-- 1. PANTALLA DE BIENVENIDA                                   -->
+    <!-- ========================================================= -->
+    <div id="pantalla-bienvenida"
+         {% if lugar and lugar.imagen_panoramica %}style="--bienvenida-bg: url('/static/{{ lugar.imagen_panoramica }}')"{% endif %}>
+
+        <div class="logos-bienvenida">
+            {% if lugar and lugar.logo_proyecto %}<img src="/static/{{ lugar.logo_proyecto }}" alt="Logo del proyecto" onerror="this.style.display='none'">{% endif %}
+            {% if lugar and lugar.logo_utc %}<img src="/static/{{ lugar.logo_utc }}" alt="Logo UTC" onerror="this.style.display='none'">{% endif %}
+        </div>
+
+        <h1>{% if lugar %}{{ lugar.nombre_proyecto }}{% else %}Turismo Inmersivo de las Ruinas de Malqui Machay{% endif %}</h1>
+        <p class="subtitulo">{% if lugar %}{{ lugar.subtitulo }}{% else %}La Maná, Cotopaxi{% endif %}</p>
+        <div class="linea-decorativa"></div>
+        <p class="introduccion">{% if lugar %}{{ lugar.introduccion }}{% else %}Explora de forma inmersiva las Ruinas de Malqui Machay.{% endif %}</p>
+
+        <button id="btn-ingresar">Ingresar al Museo Virtual</button>
+        <p class="ayuda">Usa WASD / joystick para caminar &middot; Compatible con Meta Quest</p>
+    </div>
+
+    <div id="velo-transicion"></div>
+
+    <!-- ========================================================= -->
+    <!-- OVERLAY UI                                                  -->
+    <!-- ========================================================= -->
+    <div id="overlay-ui">
+        <header id="cabecera">
+            <h1>{% if lugar %}{{ lugar.nombre_proyecto }}{% else %}Museo Virtual Malqui Machay{% endif %}<span>La Maná, Cotopaxi</span></h1>
+        </header>
+
+        <div id="indicador-zona"></div>
+
+        <div id="panel-carga">
+            <div class="spinner"></div>
+            <p>Cargando entorno inmersivo…</p>
+        </div>
+
+        <div id="panel-info" class="oculto">
+            <button id="cerrar-panel" aria-label="Cerrar">×</button>
+            <span id="info-categoria" class="etiqueta"></span>
+            <img id="info-imagen" class="oculto" alt="">
+            <h2 id="info-nombre"></h2>
+            <p id="info-subnombre"></p>
+            <p id="info-descripcion"></p>
+            <div id="info-extra"></div>
+        </div>
+
+        <div id="controles-video" class="oculto">
+            <button id="btn-video-play" aria-label="Reproducir">▶</button>
+            <button id="btn-video-pause" aria-label="Pausar">⏸</button>
+        </div>
+
+        <footer id="pie-instrucciones">
+            Camina por el sendero y mira los objetos, o haz clic en ellos, para descubrir más.
+        </footer>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ESCENA WEBXR                                                -->
+    <!-- ========================================================= -->
+    <a-scene
+        vr-mode-ui="enabled: true"
+        webxr="requiredFeatures: local-floor; optionalFeatures: bounded-floor, hand-tracking;"
+        renderer="colorManagement: true; physicallyCorrectLights: true"
+        loading-screen="enabled: false"
+        shadow="type: pcfsoft">
+
+        <a-assets timeout="15000">
+            <audio id="audio-ambiental" src="{% if lugar %}/static/{{ lugar.audio_ambiental }}{% else %}/static/audio/bosque.mp3{% endif %}" preload="auto" loop crossorigin="anonymous"></audio>
+        </a-assets>
+
+        <!-- Cielo -->
+        <a-sky id="cielo" color="#274A37"></a-sky>
+        <a-entity light="type: hemisphere; color: #EAF2E6; groundColor: #3B4A34; intensity: 0.55"></a-entity>
+
+        <!-- Niebla suave para dar profundidad al sendero -->
+        <a-entity id="fog-manager"></a-entity>
+
+        <!-- Suelo base -->
+        <a-plane rotation="-90 0 0" width="400" height="400" position="0 0 -80"
+                 material="color: #2C3B2A; shader: flat; repeat: 40 40" shadow="receive: true"></a-plane>
+
+        <!-- Contenedores dinámicos (poblados por app.js) -->
+        <a-entity id="zona-arco" position="0 0 -6"></a-entity>
+        <a-entity id="zona-sendero" position="0 0 0"></a-entity>
+        <a-entity id="zona-flora" position="0 0 0"></a-entity>
+        <a-entity id="zona-fauna" position="0 0 0"></a-entity>
+        <a-entity id="zona-historia" position="0 0 0"></a-entity>
+        <a-entity id="zona-datos" position="0 0 0"></a-entity>
+        <a-entity id="zona-video" position="0 0 0"></a-entity>
+        <a-entity id="zona-modelo" position="0 0 0"></a-entity>
+        <a-entity id="zona-puntos" position="0 0 0"></a-entity>
+
+        <!-- Cámara + interacción -->
+        <a-entity id="rig-camara" position="0 0 8">
+            <a-entity
+                id="camara"
+                camera
+                look-controls="pointerLockEnabled: true"
+                wasd-controls="acceleration: 18"
+                position="0 1.6 0">
+                <a-entity
+                    id="cursor"
+                    cursor="fuse: false; rayOrigin: mouse"
+                    raycaster="objects: .interactivo; far: 12"
+                    position="0 0 -1"
+                    geometry="primitive: ring; radiusInner: 0.006; radiusOuter: 0.009"
+                    material="color: #F5F1E8; shader: flat">
+                </a-entity>
+            </a-entity>
+        </a-entity>
+
+        <!-- Controles Meta Quest (láser) -->
+        <a-entity laser-controls="hand: left" raycaster="objects: .interactivo; far: 12"></a-entity>
+        <a-entity laser-controls="hand: right" raycaster="objects: .interactivo; far: 12"></a-entity>
+
+        <!-- Luces generales -->
+        <a-entity light="type: ambient; color: #FFF6E5; intensity: 0.55"></a-entity>
+        <a-entity light="type: directional; color: #FFF3D6; intensity: 0.75" position="10 20 6" shadow="cast: true"></a-entity>
+
+    </a-scene>
+
+    <script src="{% static 'showroom/js/app.js' %}"></script>
+</body>
+</html>
