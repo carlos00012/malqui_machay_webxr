@@ -9,7 +9,6 @@ certifi==2025.7.9
 cffi==2.0.0
 charset-normalizer==3.4.3
 click==8.1.7
-cockpit @ file:///builddir/build/BUILD/cockpit-362-build/cockpit-362/tmp/wheel/cockpit-362-py3-none-any.whl#sha256=a58100d7b054f1045e44ec3dd522c668a810e37d4f519988ec469b87a17d1e7c
 crypt_r==3.13.1
 cryptography==49.0.0
 cupshelpers==1.0
