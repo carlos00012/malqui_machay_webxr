@@ -3,3 +3,4 @@ gunicorn
 whitenoise
 django-extensions
 psycopg2-binary
+dj-database-url
