@@ -145,6 +145,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Carpeta donde cada equipo coloca sus assets 3D (.glb) y cielos 360° (.jpg).
 # Se sirve como archivo estático más -> /static/showroom/models/archivo.glb
